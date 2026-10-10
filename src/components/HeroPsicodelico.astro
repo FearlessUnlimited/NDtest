@@ -1,0 +1,103 @@
+---
+// Psychedelic header of posts, pages and guides (Elementor section 2f1f6ced / 51f02611).
+// Recipe in rescate-visual/efecto: the featured image, fixed; on hover the same image is
+// layered on top (centered instead of top-aligned) with the psychedelic filter, over 9 s.
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  titulo: string;
+  imagen?: ImageMetadata;
+}
+const { titulo, imagen } = Astro.props;
+const foto = imagen ? await getImage({ src: imagen, width: 1920, format: 'webp' }) : undefined;
+const estilo = foto ? `--foto: url('${foto.src}')` : undefined;
+---
+
+<section class:list={['hero', { 'hero--sin-foto': !foto }]} style={estilo} data-hero>
+  <div class="hero__fondo" aria-hidden="true"></div>
+  <div class="hero__capa" aria-hidden="true"></div>
+  <div class="hero__interior">
+    <slot name="antes" />
+    <h1 class="hero__titulo">{titulo}</h1>
+    <div class="hero__meta"><slot /></div>
+  </div>
+  <svg class="hero__borde" viewBox="0 0 2600 131.1" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0L2600 0 2600 69.1 0 0z" />
+    <path d="M0 0L2600 0 2600 69.1 0 69.1z" opacity=".5" />
+    <path d="M2600 0L0 0 0 130.1 2600 69.1z" opacity=".25" />
+  </svg>
+</section>
+
+<style>
+  .hero {
+    position: relative; isolation: isolate; overflow: hidden;
+    display: flex; align-items: flex-end;
+    min-height: calc(80vh + 190px);   /* Elementor adds the 60/130 padding to the 80vh container */
+    padding: 60px 0 130px;
+    background-color: var(--nd-negro);
+  }
+  .hero__fondo {
+    position: absolute; inset: -20px; z-index: -2;
+    background: var(--foto) top center / cover no-repeat fixed;
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    opacity: var(--op-scroll, 1);
+  }
+  .hero__capa {
+    position: absolute; inset: 0; z-index: -1;
+    background-color: transparent;
+    background-image: var(--nd-degradado-cabecera);
+    opacity: .53;
+    transition: background var(--nd-transicion-psicodelica), opacity var(--nd-transicion-psicodelica);
+  }
+  .hero:hover .hero__capa {
+    background: rgba(0,0,0,0) var(--foto) center center / cover no-repeat;
+    opacity: .78;
+    filter: var(--nd-filtro-psicodelico);
+  }
+  .hero--sin-foto .hero__fondo { background: radial-gradient(120% 90% at 20% 10%, #2a0057 0%, #000 60%); }
+  .hero--sin-foto:hover .hero__capa { background: radial-gradient(120% 90% at 80% 30%, #3d0080 0%, transparent 60%); filter: var(--nd-filtro-psicodelico); }
+
+  .hero__interior { width: 100%; padding: 0 80px; }
+  .hero__titulo {
+    margin: 0; max-width: 85%;
+    color: #fff; font: 300 var(--nd-hero-titulo)/.9em var(--nd-fuente-hero);
+    text-shadow: var(--nd-resplandor-cian); mix-blend-mode: luminosity;
+    text-wrap: balance; overflow-wrap: break-word;
+  }
+  .hero__meta { margin-top: 14px; color: #fff; font-size: 14px; }
+  .hero__meta:empty { display: none; }
+  .hero__borde { position: absolute; left: 0; bottom: -1px; width: calc(100% + 1.3px); height: 42px; transform: rotate(180deg); pointer-events: none; }
+  .hero__borde path { fill: #fff; }
+
+  @media (max-width: 1024px) {
+    .hero { min-height: calc(35vh + 120px); padding: 120px 0 60px; }
+    .hero__fondo { background-attachment: scroll; }
+    .hero__interior { padding: 0 40px; }
+  }
+  @media (max-width: 767px) {
+    .hero { min-height: 100vh; padding: 90px 0 70px; }
+    .hero__interior { padding: 0 24px; }
+    .hero__titulo { max-width: 100%; }
+    .hero__borde { height: 68px; }
+  }
+</style>
+
+<script>
+  // Elementor motion FX: mouse track (speed 0.1) and scroll opacity (in-out, 72–100%)
+  const reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for (const hero of document.querySelectorAll<HTMLElement>('[data-hero]')) {
+    if (reducir) break;
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      hero.style.setProperty('--mx', `${(-((e.clientX - r.left) / r.width - 0.5) * 20).toFixed(1)}px`);
+      hero.style.setProperty('--my', `${(-((e.clientY - r.top) / r.height - 0.5) * 20).toFixed(1)}px`);
+    });
+    const alDesplazar = () => {
+      const r = hero.getBoundingClientRect();
+      const visto = Math.min(Math.max(-r.top / r.height, 0), 1);
+      hero.style.setProperty('--op-scroll', (visto < 0.72 ? 1 : 1 - (visto - 0.72) / 0.28).toFixed(3));
+    };
+    addEventListener('scroll', alDesplazar, { passive: true });
+  }
+</script>

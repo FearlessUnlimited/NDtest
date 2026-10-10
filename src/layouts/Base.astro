@@ -1,0 +1,62 @@
+---
+import '@fontsource/merriweather/300.css';
+import '@fontsource/merriweather/400.css';
+import '@fontsource/merriweather/400-italic.css';
+import '@fontsource/merriweather/700.css';
+import '@fontsource/lato/700.css';
+import '@fontsource/oswald/300.css';
+import '@fontsource/oswald/400.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import '../styles/global.css';
+import Encabezado from '../components/Encabezado.astro';
+import Pie from '../components/Pie.astro';
+import { sitio } from '../data/sitio';
+
+interface Props {
+  titulo?: string;
+  descripcion?: string;
+  imagen?: string;
+  /** the page starts with a psychedelic hero: the header floats over it */
+  conHero?: boolean;
+  suscripcion?: boolean;
+}
+const { titulo, descripcion = sitio.descripcion, imagen, conHero = false, suscripcion = true } = Astro.props;
+const tituloCompleto = titulo ? `${titulo} – ${sitio.nombre}` : `${sitio.nombre} – ${sitio.descripcion}`;
+const canonica = new URL(Astro.url.pathname, Astro.site);
+const imagenSocial = imagen ? new URL(imagen, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonica} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fuentes/dashicons.woff2" as="font" type="font/woff2" crossorigin />
+    <meta property="og:site_name" content={sitio.nombre} />
+    <meta property="og:title" content={titulo ?? sitio.nombre} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonica} />
+    <meta property="og:locale" content="es_CL" />
+    {imagenSocial && <meta property="og:image" content={imagenSocial} />}
+    <meta name="twitter:card" content={imagenSocial ? 'summary_large_image' : 'summary'} />
+  </head>
+  <body>
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+    <Encabezado sobreHero={conHero} />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Pie suscripcion={suscripcion} />
+  </body>
+</html>
+
+<style>
+  .saltar { position: absolute; left: 12px; top: -60px; z-index: 100; padding: 8px 14px; background: var(--nd-morado); color: #fff; }
+  .saltar:focus { top: 12px; }
+</style>
