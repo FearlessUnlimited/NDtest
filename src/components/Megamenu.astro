@@ -7,6 +7,9 @@ import { Image } from 'astro:assets';
 import { menu, redes } from '../data/sitio';
 import piramide from '../assets/piramide.svg';
 
+// accounts need Supabase; without it "Ingresar" only announces them
+const conCuentas = Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+
 const guias = (await getCollection('guias', ({ data }) => import.meta.env.DEV || !data.borrador))
   .sort((a, b) => a.data.titulo.localeCompare(b.data.titulo, 'es'));
 ---
@@ -96,7 +99,25 @@ const guias = (await getCollection('guias', ({ data }) => import.meta.env.DEV ||
 
             {item.tipo === 'ingresar' && (
               <div class="desplegable__interior desplegable__interior--aviso">
-                <p>Próximamente podrás ingresar con tu cuenta.</p>
+                {conCuentas ? (
+                  <div class="ingresar" data-ingresar>
+                    <form data-ingresar-form novalidate>
+                      <p>Ingresa con tu email: te enviamos un enlace para entrar, sin contraseña.</p>
+                      <label for="ingresar-email" class="visualmente-oculto">Email</label>
+                      <div class="ingresar__fila">
+                        <input id="ingresar-email" type="email" placeholder="Email" required autocomplete="email" />
+                        <button type="submit">Enviarme el enlace</button>
+                      </div>
+                    </form>
+                    <div data-ingresar-sesion hidden>
+                      <p>Ingresaste como <strong data-ingresar-email></strong>.</p>
+                      <button type="button" data-ingresar-salir>Cerrar sesión</button>
+                    </div>
+                    <p class="ingresar__aviso" role="status" data-ingresar-aviso></p>
+                  </div>
+                ) : (
+                  <p>Próximamente podrás ingresar con tu cuenta.</p>
+                )}
               </div>
             )}
 
@@ -180,6 +201,17 @@ const guias = (await getCollection('guias', ({ data }) => import.meta.env.DEV ||
   .panel__enlaces a:hover, .panel__enlaces a:focus-visible { color: #fff; }
   .panel__vacio { color: #c6c6c6; font-size: 15px; padding: 12px 15px; margin: 0; }
   .panel__spotify { border: 0; border-radius: 12px; display: block; background: var(--nd-gris-900); }
+
+  .ingresar { max-width: 560px; }
+  .ingresar p { margin: 0 0 12px; }
+  .ingresar__fila { display: flex; }
+  .ingresar input { flex: 1; min-width: 0; height: 46px; padding: 0 14px; border: 0; font: 300 15px var(--nd-fuente-cuerpo); }
+  .ingresar button { height: 46px; padding: 0 18px; border: 0; cursor: pointer; background: var(--nd-verde-acento); color: #fff; font: 500 14px var(--nd-fuente-botones); }
+  .ingresar button:hover { filter: brightness(1.1); }
+  .ingresar button:disabled { opacity: .6; cursor: wait; }
+  .ingresar strong { color: #fff; }
+  .ingresar__aviso { color: var(--nd-verde-neon); min-height: 1.4em; }
+  @media (max-width: 1024px) { .ingresar__fila { flex-direction: column; gap: 8px; } }
 
   .redes { display: flex; flex-wrap: wrap; gap: 8px; }
   .redes a { display: grid; place-items: center; width: 36px; height: 36px; color: var(--nd-morado-icono); text-decoration: none; font-size: 20px; }
@@ -276,6 +308,49 @@ const guias = (await getCollection('guias', ({ data }) => import.meta.env.DEV ||
 </style>
 
 <script>
+  import { supabase } from '../lib/supabase';
+
+  // "Ingresar": magic-link sign in with Supabase Auth
+  const zona = document.querySelector<HTMLElement>('[data-ingresar]');
+  if (zona && supabase) {
+    const sb = supabase;
+    const form = zona.querySelector<HTMLFormElement>('[data-ingresar-form]')!;
+    const email = form.querySelector<HTMLInputElement>('input')!;
+    const enviar = form.querySelector<HTMLButtonElement>('button')!;
+    const sesion = zona.querySelector<HTMLElement>('[data-ingresar-sesion]')!;
+    const aviso = zona.querySelector<HTMLElement>('[data-ingresar-aviso]')!;
+    const titulo = document.querySelector<HTMLElement>('.item--ingresar .item__titulo')!;
+
+    const mostrar = (correo: string | undefined) => {
+      form.hidden = Boolean(correo);
+      sesion.hidden = !correo;
+      zona.querySelector('[data-ingresar-email]')!.textContent = correo ?? '';
+      titulo.textContent = correo ? 'Mi cuenta' : 'Ingresar';
+    };
+    sb.auth.getSession().then(({ data }) => mostrar(data.session?.user.email));
+    sb.auth.onAuthStateChange((_evento, s) => mostrar(s?.user.email));
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!email.checkValidity()) { aviso.textContent = 'Escribe un email válido.'; return; }
+      enviar.disabled = true;
+      aviso.textContent = 'Enviando…';
+      const { error } = await sb.auth.signInWithOtp({
+        email: email.value.trim(),
+        options: { emailRedirectTo: location.href.split('#')[0] },
+      });
+      enviar.disabled = false;
+      aviso.textContent = error
+        ? 'No pudimos enviar el enlace. Intenta de nuevo en un rato.'
+        : 'Revisa tu correo: te enviamos un enlace para entrar.';
+      if (error) console.error('signInWithOtp:', error);
+    });
+    zona.querySelector('[data-ingresar-salir]')!.addEventListener('click', async () => {
+      await sb.auth.signOut();
+      aviso.textContent = 'Cerraste sesión.';
+    });
+  }
+
   const ESCRITORIO = window.matchMedia('(min-width: 1025px)');
 
   for (const nav of document.querySelectorAll<HTMLElement>('.megamenu')) {

@@ -14,6 +14,28 @@ npm run preview   # sirve dist/
 npm run check     # verificación de tipos
 ```
 
+### Supabase local
+
+Las suscripciones y "Ingresar" usan Supabase, con todo en el esquema `nexilis`. Para usarlo en local:
+
+1. Abre Docker Desktop y espera a que diga "Engine running".
+2. Corre `npx supabase start`. Aplica las migraciones de `supabase/migrations`.
+3. Copia `.env.example` a `.env`. Ya trae la URL y la clave pública locales.
+4. Para ver los datos y los correos:
+   - Studio: http://127.0.0.1:54323
+   - Correos de prueba (Mailpit): http://127.0.0.1:54324
+
+Sin `.env`, el sitio funciona igual: el formulario y "Ingresar" solo muestran un aviso.
+
+Usa los mismos puertos que los otros proyectos locales, así que solo uno puede estar encendido a la vez (`npx supabase stop` en el otro).
+
+| Pieza | Cómo funciona |
+|---|---|
+| `nexilis.suscriptores` | RLS activado y sin permisos directos. Solo se escribe con la función `nexilis.suscribir(p_email)`. |
+| `nexilis.suscribir` | Valida y normaliza el email y limita a 5 por hora por IP (la IP se guarda como hash con sal privada). Responde igual si el email ya existía. |
+| `nexilis_privado` | Sal e IP hasheada. No está expuesto en la API. |
+| Ingresar | Supabase Auth con enlace mágico por email (PKCE). El correo está en español (`supabase/templates/enlace-ingreso.html`). |
+
 ## Estructura
 
 | Ruta | Contenido |
@@ -44,7 +66,8 @@ npm run check     # verificación de tipos
 
 ## Pendiente
 
-- **Supabase** (esquema `nexilis` en el Supabase local): suscripciones del pie e "Ingresar". Hoy ambos solo muestran un aviso.
+- **Publicar:** elegir hosting para el sitio y un proyecto de Supabase en la nube (o el esquema `nexilis` en "fearless-dev"). Configurar ahí las variables `PUBLIC_SUPABASE_*`, la URL del sitio y las de redirección de Auth.
+- **Correos reales:** configurar SMTP en Supabase. En local caen en Mailpit.
 - **Contenido vacío:** pestañas Escéptico, Iniciado y Espiritual, la página "La experiencia mística" y la guía DMT.
 
 ## Licencias de terceros

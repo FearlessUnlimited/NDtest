@@ -62,14 +62,29 @@ const anio = new Date().getFullYear();
 </style>
 
 <script>
+  import { suscribir, type ResultadoSuscripcion } from '../lib/supabase';
+
+  const MENSAJES: Record<ResultadoSuscripcion, string> = {
+    ok: 'Listo. Te avisaremos cuando lancemos.',
+    email_invalido: 'Escribe un email válido.',
+    demasiados_intentos: 'Demasiados intentos. Prueba de nuevo en un rato.',
+    sin_conexion: 'No pudimos guardar tu email. Intenta de nuevo más tarde.',
+    sin_backend: 'Gracias. Las suscripciones abren pronto; todavía no guardamos tu email.',
+  };
+
   for (const form of document.querySelectorAll<HTMLFormElement>('[data-suscripcion]')) {
-    form.addEventListener('submit', (e) => {
+    const email = form.querySelector<HTMLInputElement>('input[type="email"]')!;
+    const boton = form.querySelector<HTMLButtonElement>('button')!;
+    const aviso = form.parentElement!.querySelector<HTMLElement>('[data-aviso]')!;
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = form.querySelector<HTMLInputElement>('input[type="email"]')!;
-      const aviso = form.parentElement!.querySelector<HTMLElement>('[data-aviso]')!;
-      aviso.textContent = email.checkValidity()
-        ? 'Gracias. Las suscripciones abren pronto; todavía no guardamos tu email.'
-        : 'Escribe un email válido.';
+      if (!email.checkValidity()) { aviso.textContent = MENSAJES.email_invalido; return; }
+      boton.disabled = true;
+      aviso.textContent = 'Enviando…';
+      const resultado = await suscribir(email.value);
+      aviso.textContent = MENSAJES[resultado];
+      if (resultado === 'ok') form.reset();
+      boton.disabled = false;
     });
   }
 </script>
