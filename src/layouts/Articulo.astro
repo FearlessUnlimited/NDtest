@@ -1,0 +1,103 @@
+---
+// ND_NEWS (posts) and ND_Pages (pages): psychedelic hero, content column with meta and
+// share links, sidebar on the right, subscription band in the footer.
+import type { ImageMetadata } from 'astro';
+import { getImage } from 'astro:assets';
+import Base from './Base.astro';
+import HeroPsicodelico from '../components/HeroPsicodelico.astro';
+import BarraLateral from '../components/BarraLateral.astro';
+import Compartir from '../components/Compartir.astro';
+import { categoriaPorSlug, urlCategoria, formatearFecha } from '../lib/contenido';
+
+interface Props {
+  titulo: string;
+  extracto?: string;
+  imagen?: ImageMetadata;
+  fecha?: Date;
+  autor?: string;
+  categorias?: string[];
+  minutos?: number;
+  enPreparacion?: boolean;
+  /** ND_Pages showed the excerpt above the content; ND_NEWS did not (it repeats the first paragraph) */
+  mostrarExtracto?: boolean;
+}
+const { titulo, extracto, imagen, fecha, autor, categorias = [], minutos, enPreparacion = false, mostrarExtracto = false } = Astro.props;
+const cats = categorias.map(categoriaPorSlug).filter((c) => c !== undefined);
+const imagenSocial = imagen ? (await getImage({ src: imagen, width: 1200, format: 'jpg' })).src : undefined;
+---
+
+<Base titulo={titulo} descripcion={extracto} imagen={imagenSocial} conHero>
+  <HeroPsicodelico titulo={titulo} imagen={imagen}>
+    {cats.length > 0 && (
+      <p class="hero-cats">
+        <span class="icono icono-tag hero-cats__icono" aria-hidden="true"></span>
+        {cats.map((c, i) => <>{i > 0 && ', '}<a href={urlCategoria(c)}>{c.nombre}</a></>)}
+      </p>
+    )}
+    {minutos && <p class="hero-lectura">Aprox. {minutos} {minutos === 1 ? 'min' : 'mins'} de lectura</p>}
+  </HeroPsicodelico>
+
+  <div class="articulo">
+    <article class="articulo__principal">
+      <div class="articulo__barra">
+        <Compartir titulo={titulo} />
+        {fecha && <time datetime={fecha.toISOString()}>{formatearFecha(fecha)}</time>}
+        {autor && <span class="articulo__autor">{autor}</span>}
+      </div>
+      {mostrarExtracto && extracto && <p class="articulo__extracto">{extracto}</p>}
+      {enPreparacion
+        ? <p class="articulo__preparacion">Este contenido está en preparación.</p>
+        : <div class="prosa"><slot /></div>}
+      {autor && !enPreparacion && (
+        <div class="autor">
+          <span class="autor__avatar" aria-hidden="true"><span class="icono icono-admin-users"></span></span>
+          <span class="autor__nombre">{autor}</span>
+        </div>
+      )}
+    </article>
+    <BarraLateral />
+  </div>
+</Base>
+
+<style>
+  .hero-cats { margin: 0 0 6px; font-size: 14px; }
+  .hero-cats a { color: #fff; text-decoration: none; }
+  .hero-cats a:hover { text-decoration: underline; color: #fff; }
+  .hero-cats__icono { color: var(--nd-morado); margin-right: 4px; }
+  .hero-lectura { margin: 0; font: 300 15px var(--nd-fuente-hero); opacity: .85; }
+
+  .articulo {
+    display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 60px;
+    width: min(100% - 40px, 1300px); margin: 0 auto; padding-bottom: 160px;
+  }
+  /* the content card climbs over the hero, as in the original */
+  .articulo__principal {
+    position: relative; z-index: 2; margin-top: -120px;
+    background: #fff; padding: 40px 42px 60px;
+    box-shadow: 0 30px 60px -40px rgba(0,0,0,.35);
+    animation: nd-subir .9s var(--nd-curva) both;
+  }
+  .articulo > :global(.lateral) { padding-top: 60px; animation: nd-entrar-derecha .9s var(--nd-curva) .4s both; }
+  .articulo__barra {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-bottom: 28px;
+    font-size: 13px; color: var(--nd-gris-500);
+  }
+  .articulo__autor { margin-left: auto; color: var(--nd-gris-600); }
+  .articulo__extracto { color: var(--nd-gris-800); font-size: 15px; margin: 0 0 2em; }
+  .articulo__preparacion { color: var(--nd-gris-500); font-style: italic; margin: 2em 0; }
+  .autor { display: flex; align-items: center; gap: 16px; margin-top: 3em; padding: 24px; border-top: 3px solid var(--nd-gris-800); background: #f5f5f5; }
+  .autor__avatar { width: 64px; height: 64px; display: grid; place-items: center; background: #c8c8c8; color: #fff; overflow: hidden; }
+  .autor__avatar .icono { font-size: 48px; width: 48px; height: 48px; margin-top: 14px; }
+  .autor__nombre { font: 700 16px var(--nd-fuente-titulares); color: var(--nd-gris-800); }
+
+  @media (max-width: 1024px) {
+    .articulo { grid-template-columns: 1fr; gap: 40px; }
+    .articulo__principal { margin-top: -60px; padding: 30px 24px 40px; }
+    .articulo > :global(.lateral) { padding-top: 0; }
+  }
+  @media (max-width: 767px) {
+    .articulo { width: 100%; }
+    .articulo__principal { margin-top: 0; box-shadow: none; padding: 28px 20px 40px; }
+    .articulo > :global(.lateral) { padding: 0 20px; }
+  }
+</style>

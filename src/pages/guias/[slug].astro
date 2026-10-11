@@ -1,0 +1,168 @@
+---
+// ND_Full_Guide (Elementor 1280): psychedelic hero with the molecule, psychoactive card that
+// blurs on scroll, sections from the ACF fields and a sticky index with a rotating headline.
+import { getCollection, render } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import HeroPsicodelico from '../../components/HeroPsicodelico.astro';
+import BarraLateral from '../../components/BarraLateral.astro';
+import Compartir from '../../components/Compartir.astro';
+import { publicado, minutosDeLectura } from '../../lib/contenido';
+
+export async function getStaticPaths() {
+  return (await getCollection('guias', publicado)).map((guia) => ({ params: { slug: guia.id }, props: { guia } }));
+}
+
+const { guia } = Astro.props;
+const d = guia.data;
+const { Content, headings } = await render(guia);
+// skip the footnotes heading that Sätteri appends ("Referencias")
+const indice = headings.filter((h) => h.depth === 2 && !h.slug.startsWith('footnote'));
+const nombre = d.nombre ?? d.titulo;
+const minutos = minutosDeLectura(guia.body);
+const imagenSocial = d.imagen ? (await getImage({ src: d.imagen, width: 1200, format: 'jpg' })).src : undefined;
+// "Guía Completa:" + rotating words, as in the Elementor animated headline
+const palabras = ['Conociendo', 'Todo sobre', 'Descubriendo', 'Aprende sobre'];
+---
+
+<Base titulo={d.titulo} descripcion={d.extracto ?? `Guía completa sobre ${nombre}.`} imagen={imagenSocial} conHero>
+  <HeroPsicodelico titulo={d.titulo} imagen={d.imagen}>
+    {d.molecula && <Image slot="antes" src={d.molecula} alt="" width={320} class="hero-molecula" />}
+    <p class="hero-lectura">Aprox. {minutos} {minutos === 1 ? 'min' : 'mins'} de lectura</p>
+  </HeroPsicodelico>
+
+  <div class="guia">
+    <article class="guia__principal">
+      {d.borrador && <p class="guia__borrador">Borrador: esta guía no se publica todavía.</p>}
+      <header class="ficha" data-ficha>
+        {d.molecula && <Image src={d.molecula} alt={`Molécula de ${nombre}`} width={300} class="ficha__molecula" />}
+        <h2 class="ficha__nombre">{nombre}</h2>
+        {d.alias.length > 0 && (
+          <ul class="ficha__alias" aria-label="También conocido como">
+            {d.alias.map((a) => <li>{a}</li>)}
+          </ul>
+        )}
+        {(d.nombreMolecular || d.formula) && (
+          <p class="ficha__quimica">
+            {d.formula && <span class="ficha__formula">{d.formula}</span>}
+            {d.nombreMolecular && <span>{d.nombreMolecular}</span>}
+          </p>
+        )}
+      </header>
+
+      <div class="guia__barra">
+        <Compartir titulo={d.titulo} />
+        <span>Aprox. {minutos} {minutos === 1 ? 'min' : 'mins'} de lectura</span>
+      </div>
+
+      {indice.length
+        ? <div class="prosa"><Content /></div>
+        : <p class="guia__preparacion">Esta guía está en preparación.</p>}
+    </article>
+
+    <div class="guia__lateral">
+      {indice.length > 0 && (
+        <nav class="indice" aria-label="Índice de la guía">
+          <p class="indice__titular">
+            <span class="indice__fijo">Guía Completa:</span>
+            <span class="indice__rotativo" aria-hidden="true">
+              {palabras.map((p, i) => <span style={`--i:${i}`}>{p}</span>)}
+            </span>
+            <span class="visualmente-oculto">{palabras[0]}</span>
+            <span class="indice__nombre">los {nombre}</span>
+          </p>
+          <ol>
+            {indice.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}
+          </ol>
+        </nav>
+      )}
+      <BarraLateral />
+    </div>
+  </div>
+</Base>
+
+<style>
+  .hero-molecula { display: block; width: min(260px, 40vw); height: auto; margin-bottom: 20px; filter: invert(1) drop-shadow(0 0 12px var(--nd-cian)); opacity: .9; animation: nd-pulso-molecula 2.4s var(--nd-curva) 1; }
+  .hero-molecula:hover { animation: nd-pulso-molecula 1.2s var(--nd-curva); }
+  @keyframes nd-pulso-molecula { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+  .hero-lectura { margin: 0; font: 300 15px var(--nd-fuente-hero); opacity: .85; }
+
+  .guia {
+    display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 60px;
+    width: min(100% - 40px, 1300px); margin: 0 auto; padding-bottom: 160px;
+  }
+  .guia__principal {
+    position: relative; z-index: 2; margin-top: -120px; background: #fff; padding: 40px 42px 60px;
+    box-shadow: 0 30px 60px -40px rgba(0,0,0,.35);
+    animation: nd-subir .9s var(--nd-curva) both;
+  }
+  .guia__borrador { background: var(--nd-rosado); color: #fff; padding: 8px 14px; font: 500 14px var(--nd-fuente-menu); }
+
+  .ficha {
+    text-align: center; margin: 0 auto 30px; max-width: 520px;
+    filter: blur(var(--desenfoque, 0px)); opacity: var(--opacidad, 1);
+  }
+  .ficha__molecula { width: 240px; height: auto; padding: 20px; background: #fff; box-shadow: 0 0 70px -20px rgba(0,0,0,.25); transition: transform .3s; }
+  .ficha:hover .ficha__molecula { transform: scale(1.06); }
+  .ficha__nombre { margin: 18px 0 6px; font: 700 clamp(1.75rem, 2.2vw, 2.25rem)/1.2 var(--nd-fuente-titulares); color: var(--nd-morado); }
+  .ficha__alias { list-style: none; margin: 0; padding: 0; color: var(--nd-gris-500); line-height: 1.8; }
+  .ficha__quimica { display: flex; flex-direction: column; gap: 4px; margin: 14px 0 0; font-size: 12px; color: var(--nd-gris-500); }
+  .ficha__formula { font-size: 18px; color: var(--nd-gris-800); }
+
+  .guia__barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; margin-bottom: 20px; font-size: 13px; color: var(--nd-gris-500); }
+  .guia__preparacion { color: var(--nd-gris-500); font-style: italic; }
+  .guia .prosa :global(h2) { font-family: var(--nd-fuente-titulares); font-weight: 700; scroll-margin-top: 30px; }
+
+  .guia__lateral { padding-top: 60px; display: flex; flex-direction: column; gap: 40px; }
+  .indice {
+    position: sticky; top: 20px; z-index: 3;
+    background: #fff; padding: 24px; box-shadow: 0 10px 40px -20px rgba(0,0,0,.3);
+    animation: nd-velocidad-luz .9s var(--nd-curva) 1s both;
+  }
+  .indice ol { margin: 14px 0 0; padding-left: 1.4em; }
+  .indice li { padding: 3px 0; }
+  .indice a { text-decoration: none; }
+  .indice__titular { margin: 0; font: 700 15px/1.5 var(--nd-fuente-titulares); color: var(--nd-gris-800); }
+  .indice__fijo { position: relative; }
+  .indice__fijo::after { /* underline zigzag marker */
+    content: ''; position: absolute; left: 0; right: 0; bottom: -6px; height: 6px;
+    background: linear-gradient(135deg, transparent 33%, var(--nd-verde-acento) 33% 66%, transparent 66%) 0 0 / 8px 6px repeat-x;
+  }
+  .indice__rotativo { display: inline-grid; vertical-align: bottom; margin-left: 6px; color: var(--nd-morado); }
+  .indice__rotativo span { grid-area: 1 / 1; opacity: 0; animation: nd-rotar 10s calc(var(--i) * 2.5s) infinite; }
+  .indice__nombre { display: block; }
+  @keyframes nd-rotar { 0% { opacity: 0; transform: translateY(8px); } 4%, 21% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; transform: translateY(-8px); } }
+  @keyframes nd-velocidad-luz { from { opacity: 0; transform: translateX(100%) skewX(-30deg); } 60% { opacity: 1; transform: skewX(20deg); } 80% { transform: skewX(-5deg); } to { transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .indice__rotativo span { animation: none; }
+    .indice__rotativo span:first-child { opacity: 1; }
+  }
+
+  @media (max-width: 1024px) {
+    .guia { grid-template-columns: 1fr; gap: 40px; }
+    .guia__principal { margin-top: -60px; padding: 30px 24px 40px; }
+    .guia__lateral { padding-top: 0; }
+    .indice { position: static; }
+  }
+  @media (max-width: 767px) {
+    .guia { width: 100%; }
+    .guia__principal { margin-top: 0; box-shadow: none; padding: 28px 20px 40px; }
+    .guia__lateral { padding: 0 20px; }
+  }
+</style>
+
+<script>
+  // Elementor motion FX on the card: blur up to 15px and fade while it scrolls out (0–28%)
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (const ficha of document.querySelectorAll<HTMLElement>('[data-ficha]')) {
+      const alDesplazar = () => {
+        const r = ficha.getBoundingClientRect();
+        const salida = Math.min(Math.max(-r.top / (r.height || 1), 0), 1);
+        ficha.style.setProperty('--desenfoque', `${(Math.min(salida / 0.28, 1) * 15).toFixed(1)}px`);
+        ficha.style.setProperty('--opacidad', (1 - Math.min(salida / 0.35, 1) * 0.9).toFixed(2));
+      };
+      addEventListener('scroll', alDesplazar, { passive: true });
+      alDesplazar();
+    }
+  }
+</script>

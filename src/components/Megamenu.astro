@@ -297,7 +297,10 @@ const guias = (await getCollection('guias', ({ data }) => import.meta.env.DEV ||
 
     for (const item of items) {
       const boton = item.querySelector<HTMLButtonElement>('.item__boton')!;
+      let abiertoPorHover = 0;
       boton.addEventListener('click', () => {
+        // the hover that precedes a mouse click already opened it: the click must not close it again
+        if (Date.now() - abiertoPorHover < 600) return;
         const abrir = !item.hasAttribute('data-abierto');
         cerrarTodos(item);
         setItem(item, abrir);
@@ -306,6 +309,7 @@ const guias = (await getCollection('guias', ({ data }) => import.meta.env.DEV ||
       item.addEventListener('pointerenter', (e) => {
         if (!ESCRITORIO.matches || e.pointerType !== 'mouse') return;
         clearTimeout(cierreDiferido);
+        if (!item.hasAttribute('data-abierto')) abiertoPorHover = Date.now();
         cerrarTodos(item);
         setItem(item, true);
       });

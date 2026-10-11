@@ -1,0 +1,29 @@
+---
+// Home: the original was Astra's plain blog list (no Elementor design); same structure, brand styles.
+import Base from '../layouts/Base.astro';
+import TarjetaPost from '../components/TarjetaPost.astro';
+import BarraLateral from '../components/BarraLateral.astro';
+import { postsPublicados } from '../lib/contenido';
+import { sitio } from '../data/sitio';
+
+const posts = await postsPublicados();
+---
+
+<Base suscripcion={false}>
+  <div class="portada">
+    <section class="portada__lista" aria-labelledby="portada-titulo">
+      <h1 class="visualmente-oculto" id="portada-titulo">{sitio.nombre}: últimas publicaciones</h1>
+      {posts.map((post) => <TarjetaPost post={post} />)}
+      {posts.length === 0 && <p>Pronto habrá publicaciones.</p>}
+    </section>
+    <BarraLateral />
+  </div>
+</Base>
+
+<style>
+  .portada {
+    display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 60px;
+    width: min(100% - 40px, var(--nd-ancho-contenido)); margin: 0 auto; padding: 40px 0 80px;
+  }
+  @media (max-width: 1024px) { .portada { grid-template-columns: 1fr; } }
+</style>

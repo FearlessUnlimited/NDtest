@@ -43,6 +43,7 @@
 .icono-no-alt::before { content: '\f335'; }
 .icono-flecha-abajo::before { content: '\f347'; }
 .icono-flecha-derecha::before { content: '\f345'; }
+.icono-tag::before { content: '\f323'; }
 
 /* ---------- base ---------- */
 *, *::before, *::after { box-sizing: border-box; }

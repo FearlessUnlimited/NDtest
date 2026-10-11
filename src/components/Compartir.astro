@@ -1,0 +1,55 @@
+---
+// Share links (the original used the Super Socializer plugin). Plain links: no third-party scripts.
+interface Props { titulo: string }
+const { titulo } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const t = encodeURIComponent(titulo);
+const u = encodeURIComponent(url);
+const destinos = [
+  { nombre: 'WhatsApp', href: `https://wa.me/?text=${t}%20${u}`, simbolo: 'WA' },
+  { nombre: 'Twitter', href: `https://twitter.com/intent/tweet?text=${t}&url=${u}`, icono: 'twitter' },
+  { nombre: 'Facebook', href: `https://www.facebook.com/sharer/sharer.php?u=${u}`, icono: 'facebook-alt' },
+];
+---
+
+<ul class="compartir" aria-label="Compartir">
+  {destinos.map((d) => (
+    <li>
+      <a href={d.href} target="_blank" rel="noopener">
+        {d.icono ? <span class={`icono icono-${d.icono}`} aria-hidden="true"></span> : <span class="compartir__texto" aria-hidden="true">{d.simbolo}</span>}
+        <span class="visualmente-oculto">Compartir en {d.nombre}</span>
+      </a>
+    </li>
+  ))}
+  <li>
+    <button type="button" data-copiar={url} class="compartir__copiar">
+      <span class="icono icono-share" aria-hidden="true"></span>
+      <span class="visualmente-oculto">Copiar enlace</span>
+    </button>
+  </li>
+</ul>
+
+<style>
+  .compartir { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+  .compartir a, .compartir__copiar {
+    display: grid; place-items: center; width: 30px; height: 30px; padding: 0;
+    position: relative; color: var(--nd-morado-icono); background: none; border: 0; cursor: pointer; text-decoration: none; font-size: 17px;
+  }
+  .compartir a:hover, .compartir__copiar:hover { color: var(--nd-verde-acento); }
+  .compartir__texto { font: 700 11px var(--nd-fuente-menu); }
+  .compartir__copiar[data-copiado]::after { content: 'Copiado'; position: absolute; transform: translateY(26px); font: 11px var(--nd-fuente-menu); color: var(--nd-gris-600); }
+</style>
+
+<script>
+  for (const b of document.querySelectorAll<HTMLButtonElement>('[data-copiar]')) {
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copiar!);
+        b.setAttribute('data-copiado', '');
+        setTimeout(() => b.removeAttribute('data-copiado'), 1600);
+      } catch {
+        window.prompt('Copia el enlace:', b.dataset.copiar);
+      }
+    });
+  }
+</script>
