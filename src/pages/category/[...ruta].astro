@@ -1,0 +1,54 @@
+---
+// Category archives at the WordPress URLs (/category/padre/hija/); a parent lists its children's posts too.
+import Base from '../../layouts/Base.astro';
+import TarjetaPost from '../../components/TarjetaPost.astro';
+import BarraLateral from '../../components/BarraLateral.astro';
+import categorias from '../../data/categorias.json';
+import { postsPublicados, slugsDeCategoria, urlCategoria, categoriaPorSlug } from '../../lib/contenido';
+
+export function getStaticPaths() {
+  return categorias.map((categoria) => ({ params: { ruta: categoria.ruta }, props: { categoria } }));
+}
+
+const { categoria } = Astro.props;
+const incluidas = new Set(slugsDeCategoria(categoria));
+const posts = (await postsPublicados()).filter((p) => p.data.categorias.some((c) => incluidas.has(c)));
+const padre = categoria.padre ? categoriaPorSlug(categoria.padre) : undefined;
+const hijas = categorias.filter((c) => c.padre === categoria.slug);
+---
+
+<Base suscripcion={false} titulo={categoria.nombre} descripcion={categoria.descripcion ?? `Publicaciones de ${categoria.nombre} en Nexilis Dogmata.`}>
+  <div class="archivo">
+    <section>
+      <header class="archivo__cabecera">
+        {padre && <p class="archivo__padre"><a href={urlCategoria(padre)}>{padre.nombre}</a></p>}
+        <h1>{categoria.nombre}</h1>
+        {hijas.length > 0 && (
+          <ul class="archivo__hijas">
+            {hijas.map((h) => <li><a href={urlCategoria(h)}>{h.nombre}</a></li>)}
+          </ul>
+        )}
+      </header>
+      {posts.length
+        ? posts.map((post) => <TarjetaPost post={post} />)
+        : <p class="archivo__vacio">Esta sección está en preparación.</p>}
+    </section>
+    <BarraLateral />
+  </div>
+</Base>
+
+<style>
+  .archivo {
+    display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 60px;
+    width: min(100% - 40px, var(--nd-ancho-contenido)); margin: 0 auto; padding: 40px 0 80px;
+  }
+  .archivo__cabecera { margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--nd-morado); }
+  .archivo__cabecera h1 { margin: 0; font: 300 var(--nd-hero-titulo)/1 var(--nd-fuente-hero); color: var(--nd-gris-800); }
+  .archivo__padre { margin: 0 0 6px; font: 500 13px var(--nd-fuente-menu); }
+  .archivo__padre a { text-decoration: none; }
+  .archivo__hijas { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 16px 0 0; padding: 0; }
+  .archivo__hijas a { display: block; padding: 4px 12px; background: var(--nd-gris-700); color: var(--nd-verde-neon); text-decoration: none; font: 400 14px var(--nd-fuente-menu); }
+  .archivo__hijas a:hover { background: var(--nd-gris-300); color: var(--nd-morado); }
+  .archivo__vacio { color: var(--nd-gris-500); font-style: italic; }
+  @media (max-width: 1024px) { .archivo { grid-template-columns: 1fr; } }
+</style>

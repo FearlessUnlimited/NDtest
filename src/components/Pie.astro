@@ -1,0 +1,90 @@
+---
+// Footer: subscription band (Elementor sections 5228a3d / 2e713182) + Astra copyright bar.
+// See rescate-visual/pie. Subscriptions are not wired yet (Supabase pending): the form only informs.
+import { sitio } from '../data/sitio';
+
+interface Props { suscripcion?: boolean }
+const { suscripcion = true } = Astro.props;
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie">
+  {suscripcion && (
+    <section class="suscripcion" aria-labelledby="suscripcion-titulo">
+      <div class="suscripcion__contenedor">
+        <div class="suscripcion__columna">
+          <h2 class="suscripcion__titulo" id="suscripcion-titulo">Mantente al tanto de nuestro lanzamiento</h2>
+          <form class="suscripcion__form" data-suscripcion novalidate>
+            <label for="suscripcion-email" class="visualmente-oculto">Email</label>
+            <input id="suscripcion-email" name="email" type="email" placeholder="Email" required autocomplete="email" />
+            <button type="submit">Enviar</button>
+          </form>
+          <p class="suscripcion__nota">Estamos trabajando para poder configurar nuestro sitio web y empezar nuestra comunidad!</p>
+          <p class="suscripcion__aviso" role="status" data-aviso></p>
+        </div>
+      </div>
+    </section>
+  )}
+  <div class="copyright">Copyright © {anio} {sitio.nombre} | {sitio.creditos}</div>
+</footer>
+
+<style>
+  .suscripcion { background: var(--nd-negro); margin-top: -120px; padding: 140px 0 60px; }
+  .suscripcion__contenedor { max-width: var(--nd-ancho-elementor); margin: 0 auto; }
+  .suscripcion__columna { margin-right: 33%; padding: 10px; }
+  .suscripcion__titulo {
+    margin: 0 0 20px; color: #fff; font: 700 var(--nd-h2)/1.3em var(--nd-fuente-cuerpo);
+  }
+  .suscripcion__form { display: flex; margin-bottom: 20px; }
+  .suscripcion__form input {
+    flex: 0 0 66%; min-width: 0; height: 59px; padding: 7px 20px; border: 0; border-radius: 0;
+    background: #fff; color: var(--nd-gris-500); font: 300 18px var(--nd-fuente-cuerpo);
+  }
+  .suscripcion__form button {
+    flex: 1; height: 59px; border: 0; border-radius: 0; cursor: pointer;
+    background: var(--nd-boton-pizarra); color: #fff; font: 500 18px var(--nd-fuente-botones);
+  }
+  .suscripcion__form button:hover { filter: brightness(1.1); }
+  .suscripcion__nota { margin: 0; color: var(--nd-texto-suave-sobre-negro); font-size: 14px; line-height: 26px; font-weight: 300; }
+  .suscripcion__aviso { color: var(--nd-verde-neon); font-size: 14px; min-height: 1.5em; margin: 8px 0 0; }
+  .copyright {
+    background: var(--nd-gris-800); border-top: 1px solid var(--nd-gris-500);
+    padding: 40px 20px; color: #fff; font-size: 15px; line-height: 1.857; text-align: center;
+  }
+  @media (max-width: 1024px) {
+    .suscripcion__columna { margin-right: 0; padding: 10px 80px; text-align: center; }
+  }
+  @media (max-width: 767px) {
+    .suscripcion__columna { padding: 40px; }
+    .suscripcion__form { flex-direction: column; }
+    .suscripcion__form input, .suscripcion__form button { flex: none; width: 100%; }
+  }
+</style>
+
+<script>
+  import { suscribir, type ResultadoSuscripcion } from '../lib/supabase';
+
+  const MENSAJES: Record<ResultadoSuscripcion, string> = {
+    ok: 'Listo. Te avisaremos cuando lancemos.',
+    email_invalido: 'Escribe un email válido.',
+    demasiados_intentos: 'Demasiados intentos. Prueba de nuevo en un rato.',
+    sin_conexion: 'No pudimos guardar tu email. Intenta de nuevo más tarde.',
+    sin_backend: 'Gracias. Las suscripciones abren pronto; todavía no guardamos tu email.',
+  };
+
+  for (const form of document.querySelectorAll<HTMLFormElement>('[data-suscripcion]')) {
+    const email = form.querySelector<HTMLInputElement>('input[type="email"]')!;
+    const boton = form.querySelector<HTMLButtonElement>('button')!;
+    const aviso = form.parentElement!.querySelector<HTMLElement>('[data-aviso]')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!email.checkValidity()) { aviso.textContent = MENSAJES.email_invalido; return; }
+      boton.disabled = true;
+      aviso.textContent = 'Enviando…';
+      const resultado = await suscribir(email.value);
+      aviso.textContent = MENSAJES[resultado];
+      if (resultado === 'ok') form.reset();
+      boton.disabled = false;
+    });
+  }
+</script>

@@ -1,0 +1,43 @@
+---
+// Post card for the home page and category listings.
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { categoriaPorSlug, urlCategoria, formatearFecha } from '../lib/contenido';
+
+interface Props { post: CollectionEntry<'posts'> }
+const { post } = Astro.props;
+const d = post.data;
+const url = `/${post.id}/`;
+const cats = d.categorias.map(categoriaPorSlug).filter((c) => c !== undefined);
+---
+
+<article class="tarjeta">
+  {d.imagen && (
+    <a href={url} class="tarjeta__imagen" tabindex="-1" aria-hidden="true">
+      <Image src={d.imagen} alt="" width={900} />
+    </a>
+  )}
+  <div class="tarjeta__cuerpo">
+    <h2 class="tarjeta__titulo"><a href={url}>{d.titulo}</a></h2>
+    <p class="tarjeta__meta">
+      <time datetime={d.fecha.toISOString()}>{formatearFecha(d.fecha)}</time>
+      {cats.length > 0 && <> · {cats.map((c, i) => <>{i > 0 && ', '}<a href={urlCategoria(c)}>{c.nombre}</a></>)}</>}
+      {' '}· Por {d.autor}
+    </p>
+    {d.extracto && <p class="tarjeta__extracto">{d.extracto}</p>}
+  </div>
+</article>
+
+<style>
+  .tarjeta { padding-bottom: 40px; margin-bottom: 40px; border-bottom: 1px solid #eee; }
+  .tarjeta__imagen { display: block; overflow: hidden; margin-bottom: 18px; line-height: 0; }
+  .tarjeta__imagen img { width: 100%; max-height: 520px; object-fit: cover; transition: filter 3s var(--nd-curva), transform 3s var(--nd-curva); }
+  /* a short taste of the psychedelic filter on hover */
+  .tarjeta:hover .tarjeta__imagen img { filter: saturate(160%) hue-rotate(40deg) contrast(120%); transform: scale(1.02); }
+  .tarjeta__titulo { margin: 0 0 6px; font: 400 clamp(1.375rem, 1.6vw, 1.75rem)/1.25 var(--nd-fuente-widgets); }
+  .tarjeta__titulo a { color: var(--nd-gris-800); text-decoration: none; }
+  .tarjeta__titulo a:hover { color: var(--nd-morado); }
+  .tarjeta__meta { margin: 0 0 12px; font-size: 14px; color: var(--nd-gris-500); }
+  .tarjeta__extracto { margin: 0; color: var(--nd-gris-800); }
+  @media (prefers-reduced-motion: reduce) { .tarjeta:hover .tarjeta__imagen img { transform: none; } }
+</style>

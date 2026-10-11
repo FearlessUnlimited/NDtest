@@ -1,0 +1,103 @@
+---
+// Sidebar of the ND_NEWS / ND_Pages templates: social icons, the "Acerca de" flip-box
+// with the pyramid cat, and recent posts. The Facebook page plugin and search were left out.
+import { Image } from 'astro:assets';
+import { redes } from '../data/sitio';
+import { postsPublicados } from '../lib/contenido';
+import piramide from '../assets/piramide.svg';
+
+const recientes = (await postsPublicados()).slice(0, 4);
+---
+
+<aside class="lateral" aria-label="Barra lateral">
+  <ul class="lateral__redes">
+    {redes.map((r) => (
+      <li><a href={r.url} rel="noopener" target="_blank" class={`red red--${r.icono}`}><span class={`icono icono-${r.icono}`} aria-hidden="true"></span><span class="visualmente-oculto">{r.nombre}</span></a></li>
+    ))}
+  </ul>
+
+  <div class="giro" data-giro>
+    <div class="giro__interior">
+      <div class="giro__cara giro__cara--frente">
+        <Image src={piramide} alt="" width={240} class="giro__imagen" />
+        <p class="giro__titulo">Acerca de Nexilis Dogmata</p>
+        <p class="giro__bajada">Declaración de Principios</p>
+      </div>
+      <div class="giro__cara giro__cara--reverso">
+        <p class="giro__titulo">Declaración de Principios</p>
+        <p>Nexilis Dogmata es una iniciativa de cambio social, emanada desde la experiencia psicodélica y espiritual …</p>
+        <a class="giro__boton" href="/que-es-nexilis-dogmata/">Leer Más</a>
+      </div>
+    </div>
+  </div>
+
+  {recientes.length > 0 && (
+    <section class="recientes">
+      <h2 class="lateral__titulo">Posts Recientes</h2>
+      <ul>
+        {recientes.map((p) => (
+          <li>
+            <a href={`/${p.id}/`} class="reciente">
+              {p.data.imagen && <Image src={p.data.imagen} alt="" width={120} height={120} class="reciente__imagen" />}
+              <span>{p.data.titulo}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</aside>
+
+<style>
+  .lateral { display: flex; flex-direction: column; gap: 40px; font-family: var(--nd-fuente-cuerpo); }
+  .lateral ul { list-style: none; margin: 0; padding: 0; }
+  .lateral__titulo { font: 400 22px/1.3 var(--nd-fuente-widgets); color: var(--nd-gris-800); margin: 0 0 16px; }
+
+  .lateral__redes { display: flex; justify-content: center; gap: 6px; }
+  .red { display: grid; place-items: center; width: 34px; height: 34px; color: #fff; text-decoration: none; font-size: 18px; }
+  .red--facebook-alt { background: #3b5998; }
+  .red--twitter { background: #1da1f2; }
+  .red--camera { background: #262626; }
+  .red:hover { filter: brightness(1.15); color: #fff; }
+
+  /* flip-box 3D (Elementor 59a00a59): mouse track inverse + tilt 1.1 */
+  .giro { perspective: 1000px; height: 300px; }
+  .giro__interior {
+    position: relative; height: 100%; transform-style: preserve-3d;
+    transition: transform .6s var(--nd-curva);
+    transform: rotateX(var(--rx, 0deg)) rotateY(calc(var(--ry, 0deg) + var(--giro, 0deg)));
+  }
+  .giro:hover .giro__interior, .giro:focus-within .giro__interior { --giro: 180deg; }
+  .giro__cara {
+    position: absolute; inset: 0; backface-visibility: hidden; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 24px; color: #fff;
+  }
+  .giro__cara--frente { background: #1abc9c; }
+  .giro__cara--reverso { background: #4054b2; transform: rotateY(180deg); font-size: 14px; line-height: 1.6; }
+  .giro__cara p { margin: 0 0 10px; }
+  .giro__imagen { width: 75%; height: auto; margin-bottom: 14px; }
+  .giro__titulo { font: 700 20px var(--nd-fuente-titulares); margin-bottom: 4px !important; }
+  .giro__bajada { font-size: 14px; }
+  .giro__boton { margin-top: 8px; padding: 10px 24px; border: 2px solid #fff; color: #fff; text-decoration: none; font: 500 14px var(--nd-fuente-botones); }
+  .giro__boton:hover { background: #fff; color: #4054b2; }
+
+  .reciente { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; padding: 8px 0; color: var(--nd-gris-800); text-decoration: none; font-size: 13px; line-height: 1.4; }
+  .reciente:hover { color: var(--nd-morado); }
+  .reciente__imagen { width: 56px; height: 56px; object-fit: cover; }
+</style>
+
+<script>
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    for (const giro of document.querySelectorAll<HTMLElement>('[data-giro]')) {
+      giro.addEventListener('mousemove', (e) => {
+        const r = giro.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        giro.style.setProperty('--ry', `${(-x * 12).toFixed(1)}deg`);
+        giro.style.setProperty('--rx', `${(y * 12).toFixed(1)}deg`);
+      });
+      giro.addEventListener('mouseleave', () => { giro.style.removeProperty('--rx'); giro.style.removeProperty('--ry'); });
+    }
+  }
+</script>

@@ -1,0 +1,36 @@
+---
+// Posts and pages share the root, as in WordPress (/%postname%/).
+import { getCollection, render } from 'astro:content';
+import Articulo from '../layouts/Articulo.astro';
+import { publicado, minutosDeLectura, type Articulo as Entrada } from '../lib/contenido';
+
+export async function getStaticPaths() {
+  const entradas: Entrada[] = [...(await getCollection('posts', publicado)), ...(await getCollection('paginas', publicado))];
+  const vistos = new Set<string>();
+  for (const e of entradas) {
+    if (vistos.has(e.id)) throw new Error(`Slug repetido entre posts y páginas: ${e.id}`);
+    vistos.add(e.id);
+  }
+  return entradas.map((entrada) => ({ params: { slug: entrada.id }, props: { entrada } }));
+}
+
+const { entrada } = Astro.props;
+const { Content } = await render(entrada);
+const d = entrada.data;
+const esPost = entrada.collection === 'posts';
+const enPreparacion = 'enPreparacion' in d && d.enPreparacion;
+---
+
+<Articulo
+  titulo={d.titulo}
+  extracto={d.extracto}
+  mostrarExtracto={!esPost}
+  imagen={d.imagen}
+  fecha={esPost ? d.fecha : undefined}
+  autor={d.autor}
+  categorias={'categorias' in d ? d.categorias : []}
+  minutos={enPreparacion ? undefined : minutosDeLectura(entrada.body)}
+  enPreparacion={enPreparacion}
+>
+  <Content />
+</Articulo>

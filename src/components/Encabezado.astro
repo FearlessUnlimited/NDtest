@@ -1,0 +1,33 @@
+---
+// Elementor header 168: logo on the left, megamenu on the right, 80px tall.
+// Over a psychedelic hero it is transparent (the hero slides under it).
+import { Image } from 'astro:assets';
+import Megamenu from './Megamenu.astro';
+import logo from '../assets/logo.svg';
+
+interface Props { sobreHero?: boolean }
+const { sobreHero = false } = Astro.props;
+---
+
+<header class:list={['encabezado', { 'encabezado--sobre-hero': sobreHero }]}>
+  <a class="encabezado__logo" href="/">
+    <Image src={logo} alt="Nexilis Dogmata" height={48} loading="eager" />
+  </a>
+  <Megamenu />
+</header>
+
+<style>
+  .encabezado {
+    position: relative; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    height: var(--nd-alto-menu); padding: 0 0 0 15px;
+    background: #fff;
+    box-shadow: 0 10px 30px -20px rgba(0,0,0,.25);
+  }
+  .encabezado--sobre-hero { position: absolute; inset: 0 0 auto 0; background: transparent; box-shadow: none; }
+  .encabezado__logo { display: block; line-height: 0; }
+  .encabezado__logo img { height: 48px; width: auto; }
+  @media (max-width: 1024px) {
+    .encabezado__logo img { height: 40px; }
+  }
+</style>

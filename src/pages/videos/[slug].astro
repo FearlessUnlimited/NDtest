@@ -1,0 +1,68 @@
+---
+// Talks (Elementor template "Charlas", never finished in WordPress). Kept simple: video,
+// notable quote, speaker and the ACF text fields. Drafts are only built in `astro dev`.
+import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import HeroPsicodelico from '../../components/HeroPsicodelico.astro';
+import { publicado } from '../../lib/contenido';
+
+export async function getStaticPaths() {
+  return (await getCollection('charlas', publicado)).map((charla) => ({ params: { slug: charla.id }, props: { charla } }));
+}
+
+const { charla } = Astro.props;
+const d = charla.data;
+const { Content } = await render(charla);
+const youtubeId = d.video?.match(/(?:v=|youtu\.be\/)([\w-]{11})/)?.[1];
+---
+
+<Base titulo={d.titulo} conHero>
+  <HeroPsicodelico titulo={d.titulo}>
+    {d.expositor && <p class="hero-expositor">{d.expositor}{d.cargo && ` · ${d.cargo}`}</p>}
+  </HeroPsicodelico>
+
+  <div class="charla contenedor">
+    {d.borrador && <p class="charla__borrador">Borrador: esta charla no se publica todavía.</p>}
+    {youtubeId && (
+      <div class="charla__video">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/${youtubeId}`} title={d.titulo} loading="lazy"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen
+        ></iframe>
+      </div>
+    )}
+    {d.frase && (
+      <blockquote class="charla__cita">
+        <p>“{d.frase}”</p>
+        {d.expositor && <footer>— {d.expositor}</footer>}
+      </blockquote>
+    )}
+    <div class="charla__cuerpo">
+      {d.foto && <Image src={d.foto} alt={d.expositor ?? ''} width={240} class="charla__foto" />}
+      <div class="prosa"><Content /></div>
+    </div>
+    <dl class="charla__datos">
+      {d.idioma && <><dt>Idioma</dt><dd>{d.idioma}</dd></>}
+      {d.subtitulosEspanol && <><dt>Subtítulos en español</dt><dd>{d.subtitulosEspanol}</dd></>}
+      {d.subtitulosIngles && <><dt>Subtítulos en inglés</dt><dd>{d.subtitulosIngles}</dd></>}
+    </dl>
+  </div>
+</Base>
+
+<style>
+  .hero-expositor { margin: 0; font: 300 18px var(--nd-fuente-hero); }
+  .charla { padding: 50px 0 160px; max-width: 960px; }
+  .charla__borrador { background: var(--nd-rosado); color: #fff; padding: 8px 14px; font: 500 14px var(--nd-fuente-menu); }
+  .charla__video { aspect-ratio: 16 / 9; margin-bottom: 40px; background: var(--nd-negro); }
+  .charla__video iframe { width: 100%; height: 100%; border: 0; }
+  .charla__cita { margin: 0 0 40px; padding: 0 0 0 24px; border-left: 4px solid var(--nd-cian); animation: nd-entrar-derecha 1s var(--nd-curva) both; }
+  .charla__cita p { margin: 0 0 8px; font: 300 clamp(1.5rem, 2.4vw, 2.25rem)/1.25 var(--nd-fuente-hero); color: var(--nd-gris-800); }
+  .charla__cita footer { color: var(--nd-gris-500); }
+  .charla__cuerpo { display: grid; grid-template-columns: 240px 1fr; gap: 40px; align-items: start; }
+  .charla__foto { width: 100%; height: auto; }
+  .charla__datos { display: grid; grid-template-columns: max-content 1fr; gap: 6px 20px; margin-top: 30px; font-size: 14px; }
+  .charla__datos dt { color: var(--nd-gris-500); }
+  .charla__datos dd { margin: 0; }
+  @media (max-width: 767px) { .charla__cuerpo { grid-template-columns: 1fr; } }
+</style>

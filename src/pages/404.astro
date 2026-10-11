@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Página no encontrada" suscripcion={false}>
+  <section class="no-encontrada contenedor">
+    <p class="no-encontrada__codigo" aria-hidden="true">404</p>
+    <h1>Esta página se disolvió como el ego</h1>
+    <p>No encontramos lo que buscabas. Quizás cambió de lugar al dejar WordPress.</p>
+    <p><a href="/">Volver a la portada</a> o abre el menú <strong>Antes que todo</strong> para empezar a leer.</p>
+  </section>
+</Base>
+
+<style>
+  .no-encontrada { padding: 80px 0 120px; text-align: center; }
+  .no-encontrada__codigo {
+    margin: 0; font: 300 clamp(6rem, 18vw, 12rem)/1 var(--nd-fuente-hero); color: var(--nd-negro);
+    text-shadow: var(--nd-resplandor-cian); animation: nd-404 9s ease-in-out infinite alternate;
+  }
+  @keyframes nd-404 { to { filter: hue-rotate(64deg) saturate(200%); color: var(--nd-morado); } }
+  .no-encontrada h1 { font: 700 clamp(1.5rem, 2.4vw, 2rem)/1.3 var(--nd-fuente-titulares); color: var(--nd-morado); }
+</style>

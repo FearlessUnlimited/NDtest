@@ -1,0 +1,85 @@
+/*
+  Tokens de diseño de Nexilis Dogmata, consolidados el 2026-10-10 a partir del sitio WordPress original.
+  Copia de rescate-visual/estilos/tokens.css (las reglas base viven en global.css).
+  Fuentes de cada valor:
+    [kit]    Kit activo de Elementor ND2020 (id 1444)        -> original/elementor-kit-nd2020.css
+    [global] Esquemas globales de Elementor (colores/tipos)  -> original/elementor-global.css
+    [astra]  Ajustes del tema Astra                          -> original/astra-settings.json
+    [menu]   Tema del menú QuadMenu custom_theme_1           -> ../menu/
+    [efecto] Cabecera psicodélica (plantillas de posts)      -> ../efecto/
+    [pie]    Franja de suscripción y copyright               -> ../pie/
+    [css]    CSS adicional de WordPress                      -> css-adicional-wordpress.css
+*/
+:root {
+  /* ---------- colores de marca ---------- */
+  --nd-morado: #7100e2;          /* [global] primario: titulares, H2 [kit], íconos, pestaña activa [menu] */
+  --nd-morado-icono: #8224e3;    /* [menu] íconos del menú */
+  --nd-verde-neon: #59d600;      /* [menu] enlaces y subtítulos del megamenú, scrollbar */
+  --nd-verde-acento: #47a404;    /* [global] acento: fondo de botones de Elementor */
+  --nd-cian: #00ffd4;            /* [efecto] resplandor del título psicodélico */
+  --nd-rosado: #fb88dd;          /* [menu] insignia "START", hamburguesa */
+
+  /* ---------- neutros ---------- */
+  --nd-negro: #000000;           /* [menu] desplegable, [pie] franja de suscripción */
+  --nd-gris-900: #111111;        /* [menu] ítem superior abierto */
+  --nd-gris-800: #3a3a3a;        /* [astra] texto base; [pie] fondo del copyright */
+  --nd-gris-700: #3f3f3f;        /* [menu] pestaña en reposo */
+  --nd-gris-600: #54595f;        /* [global] secundario */
+  --nd-gris-500: #7a7a7a;        /* [global] texto de Elementor; [pie] borde del copyright */
+  --nd-gris-300: #c1c1c1;        /* [menu] pestaña activa */
+  --nd-blanco: #ffffff;
+  --nd-texto-suave-sobre-negro: rgba(255,255,255,.51); /* [pie] */
+  --nd-boton-pizarra: rgba(84,108,124,.79);            /* [pie] botón "Enviar" */
+
+  /* enlaces — decidido 2026-10-10: el morado de marca reemplaza al azul por defecto de Astra (#0274be).
+     Contraste sobre blanco 7.5:1. El verde neón (≈2:1 sobre blanco) queda solo para fondos oscuros. */
+  --nd-enlace: var(--nd-morado);
+  --nd-enlace-hover: var(--nd-gris-800);  /* como el hover original de Astra (#3a3a3a) */
+  --nd-enlace-sobre-oscuro: var(--nd-verde-neon);
+
+  /* ---------- tipografías ----------
+     Decidido 2026-10-10: de 7 familias a 4.
+       Merriweather       -> texto (sin cambios)
+       Lato               -> titulares (sin cambios)
+       Oswald             -> cabeceras psicodélicas + títulos de widgets (absorbe Fjalla One, también condensada)
+       Roboto             -> interfaz: menú, botones, separadores (absorbe Merriweather Sans y Roboto Slab)
+     Pesos a cargar: Merriweather 300/400/700 · Lato 700 · Oswald 300/400 · Roboto 400/500/700 */
+  --nd-fuente-cuerpo: "Merriweather", serif;     /* [astra] 15px / 400; texto de Elementor en 300 (el original pedía 200, que Merriweather no tiene) */
+  --nd-fuente-titulares: "Lato", sans-serif;     /* [global] 700 */
+  --nd-fuente-hero: "Oswald", sans-serif;        /* [efecto] 300 */
+  --nd-fuente-widgets: var(--nd-fuente-hero);    /* antes Fjalla One [astra]; Oswald 400 */
+  --nd-fuente-interfaz: "Roboto", sans-serif;    /* [menu] 700 nivel superior, 400 interno */
+  --nd-fuente-menu: var(--nd-fuente-interfaz);
+  --nd-fuente-botones: var(--nd-fuente-interfaz);   /* antes Merriweather Sans 500 [global] */
+  --nd-fuente-separador: var(--nd-fuente-interfaz); /* antes Roboto Slab 400 [global] */
+
+  /* tamaños — decidido 2026-10-10: se conserva la proporción original en vw, pero con
+     clamp(mínimo, original, máximo) para que no se achiquen en pantallas medianas ni crezcan sin límite.
+     El valor central es el original; a 1440 px de ancho se ve igual que antes. */
+  --nd-texto-base: 15px;                                   /* [astra] */
+  /* [kit] original 1.5vw (15px a 1024) y 6.5vw en móvil, con salto entre rangos: una sola fórmula continua.
+     20px hasta ~1290px de ancho, 21,6px a 1440 (como el original), 28px desde 1920. */
+  --nd-h2: clamp(1.25rem, 1.333vw + 2.4px, 1.75rem);
+  --nd-h2-interlineado: 1.7em;                             /* [kit] móvil 1.4em */
+  --nd-h2-espaciado: -0.3px;                               /* [kit] */
+  --nd-h5: clamp(1rem, 1.1vw, 1.25rem);                    /* [kit] 1.1vw y 4.1vw en móvil: 16px a 20px */
+  --nd-parrafo-separacion: 1.9em;                          /* [kit] margen inferior de párrafos */
+  /* [efecto] original 3.2vw / 5.3vw tableta / 10vw móvil, con saltos entre rangos: una sola fórmula continua.
+     36px hasta ~770px de ancho, 39px a 1024, 46px a 1440 (como el original), 53px a 1920, máximo 56px. */
+  --nd-hero-titulo: clamp(2.25rem, 1.5vw + 1.5rem, 3.5rem);
+
+  /* ---------- efectos ---------- */
+  --nd-resplandor-cian: 0 0 13px var(--nd-cian);                 /* [efecto] + mix-blend-mode: luminosity */
+  --nd-resplandor-blanco: 0 0 13px #ffffff;                      /* [css] .sombramenu + luminosity */
+  --nd-filtro-psicodelico: brightness(200%) contrast(200%) saturate(200%) blur(2.2px) hue-rotate(64deg); /* [efecto] */
+  --nd-transicion-psicodelica: 9s;                               /* [efecto] */
+  --nd-degradado-cabecera: linear-gradient(340deg, rgba(0,0,0,0) 50%, #000 64%); /* [efecto] opacidad .53 */
+  --nd-sombra-imagen: 0 8px 74px -51px rgba(0,0,0,.5);           /* [kit] todas las imágenes, transición .9s */
+  --nd-sombra-desplegable: 0 2px 5px rgba(0,0,0,.15);            /* [menu] */
+  --nd-curva: cubic-bezier(0.18, 0.74, 0.72, 1);                 /* [menu] animaciones del menú */
+
+  /* ---------- medidas ---------- */
+  --nd-ancho-contenido: 1200px;  /* [astra] site-content-width */
+  --nd-ancho-elementor: 1140px;  /* contenedor por defecto de las secciones de Elementor */
+  --nd-alto-menu: 80px;          /* header de Elementor */
+}

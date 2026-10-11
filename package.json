@@ -1,0 +1,30 @@
+{
+  "name": "nexilis-dogmata",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.2",
+    "@fontsource/lato": "^5.3.0",
+    "@fontsource/merriweather": "^5.3.0",
+    "@fontsource/oswald": "^5.3.0",
+    "@fontsource/roboto": "^5.3.0",
+    "@supabase/supabase-js": "^2.117.2",
+    "astro": "^7.3.5"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "supabase": "^2.120.0",
+    "typescript": "^6.0.3"
+  }
+}

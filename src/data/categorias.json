@@ -1,0 +1,279 @@
+[
+  {
+    "slug": "agricultura-organica",
+    "nombre": "Agricultura Orgánica",
+    "padre": "medio-ambiente",
+    "ruta": "medio-ambiente/agricultura-organica"
+  },
+  {
+    "slug": "arte-y-cultura",
+    "nombre": "Arte y Cultura",
+    "padre": null,
+    "ruta": "arte-y-cultura"
+  },
+  {
+    "slug": "autocultivo",
+    "nombre": "Autocultivo",
+    "padre": "psicoactivos",
+    "ruta": "psicoactivos/autocultivo"
+  },
+  {
+    "slug": "bienestar",
+    "nombre": "Bienestar",
+    "padre": null,
+    "ruta": "bienestar"
+  },
+  {
+    "slug": "calentamiento-global",
+    "nombre": "Calentamiento Global",
+    "padre": "medio-ambiente",
+    "ruta": "medio-ambiente/calentamiento-global"
+  },
+  {
+    "slug": "ciencia",
+    "nombre": "Ciencia",
+    "padre": "mente-y-espiritu",
+    "ruta": "mente-y-espiritu/ciencia"
+  },
+  {
+    "slug": "cine",
+    "nombre": "Cine",
+    "padre": "arte-y-cultura",
+    "ruta": "arte-y-cultura/cine"
+  },
+  {
+    "slug": "conservacion",
+    "nombre": "Conservación",
+    "padre": "medio-ambiente",
+    "ruta": "medio-ambiente/conservacion"
+  },
+  {
+    "slug": "consumo",
+    "nombre": "Consumo",
+    "padre": "identidad",
+    "ruta": "identidad/consumo"
+  },
+  {
+    "slug": "ecosistemas",
+    "nombre": "Ecosistemas",
+    "padre": "medio-ambiente",
+    "ruta": "medio-ambiente/ecosistemas"
+  },
+  {
+    "slug": "ensayos-clinicos",
+    "nombre": "Ensayos Clinicos",
+    "padre": "psicoactivos",
+    "ruta": "psicoactivos/ensayos-clinicos",
+    "descripcion": "Clinical Trials o Ensayos Clínicos con Psicoactivos, Ecodélicos y Enteógenos."
+  },
+  {
+    "slug": "entrevistas",
+    "nombre": "Entrevistas",
+    "padre": "iconos",
+    "ruta": "iconos/entrevistas"
+  },
+  {
+    "slug": "especies",
+    "nombre": "Especies",
+    "padre": "medio-ambiente",
+    "ruta": "medio-ambiente/especies"
+  },
+  {
+    "slug": "espiritualidad",
+    "nombre": "Espiritualidad",
+    "padre": "mente-y-espiritu",
+    "ruta": "mente-y-espiritu/espiritualidad"
+  },
+  {
+    "slug": "eventos",
+    "nombre": "Eventos",
+    "padre": "arte-y-cultura",
+    "ruta": "arte-y-cultura/eventos"
+  },
+  {
+    "slug": "experiencias",
+    "nombre": "Experiencias",
+    "padre": null,
+    "ruta": "experiencias"
+  },
+  {
+    "slug": "filosofia",
+    "nombre": "Filosofía",
+    "padre": "mente-y-espiritu",
+    "ruta": "mente-y-espiritu/filosofia"
+  },
+  {
+    "slug": "guias",
+    "nombre": "Guías",
+    "padre": null,
+    "ruta": "guias"
+  },
+  {
+    "slug": "humor",
+    "nombre": "Humor",
+    "padre": null,
+    "ruta": "humor"
+  },
+  {
+    "slug": "iconos",
+    "nombre": "Iconos",
+    "padre": null,
+    "ruta": "iconos"
+  },
+  {
+    "slug": "identidad",
+    "nombre": "Identidad",
+    "padre": null,
+    "ruta": "identidad"
+  },
+  {
+    "slug": "latinoamerica",
+    "nombre": "Latinoamérica",
+    "padre": "identidad",
+    "ruta": "identidad/latinoamerica"
+  },
+  {
+    "slug": "literatura-y-poesia",
+    "nombre": "Literatura y Poesía",
+    "padre": "arte-y-cultura",
+    "ruta": "arte-y-cultura/literatura-y-poesia"
+  },
+  {
+    "slug": "medio-ambiente",
+    "nombre": "Medio Ambiente",
+    "padre": null,
+    "ruta": "medio-ambiente"
+  },
+  {
+    "slug": "memes",
+    "nombre": "Memes",
+    "padre": "humor",
+    "ruta": "humor/memes"
+  },
+  {
+    "slug": "mente-y-espiritu",
+    "nombre": "Mente & Espíritu",
+    "padre": null,
+    "ruta": "mente-y-espiritu"
+  },
+  {
+    "slug": "microdosing",
+    "nombre": "MicroDosing",
+    "padre": "psicoactivos",
+    "ruta": "psicoactivos/microdosing"
+  },
+  {
+    "slug": "mitigacion-de-danos",
+    "nombre": "Mitigación de Daños",
+    "padre": "psicoactivos",
+    "ruta": "psicoactivos/mitigacion-de-danos"
+  },
+  {
+    "slug": "musica",
+    "nombre": "Música",
+    "padre": "arte-y-cultura",
+    "ruta": "arte-y-cultura/musica"
+  },
+  {
+    "slug": "nuestros-hijos",
+    "nombre": "Nuestros Hijos",
+    "padre": "bienestar",
+    "ruta": "bienestar/nuestros-hijos"
+  },
+  {
+    "slug": "perfiles",
+    "nombre": "Perfiles",
+    "padre": "iconos",
+    "ruta": "iconos/perfiles"
+  },
+  {
+    "slug": "psicoactivos",
+    "nombre": "Psicoactivos",
+    "padre": null,
+    "ruta": "psicoactivos"
+  },
+  {
+    "slug": "pueblos-originarios",
+    "nombre": "Pueblos Originarios",
+    "padre": "identidad",
+    "ruta": "identidad/pueblos-originarios"
+  },
+  {
+    "slug": "reciclaje",
+    "nombre": "Reciclaje",
+    "padre": "medio-ambiente",
+    "ruta": "medio-ambiente/reciclaje"
+  },
+  {
+    "slug": "religion",
+    "nombre": "Religión",
+    "padre": "mente-y-espiritu",
+    "ruta": "mente-y-espiritu/religion"
+  },
+  {
+    "slug": "renacimiento-psicodelico",
+    "nombre": "Renacimiento Psicodélico",
+    "padre": "psicoactivos",
+    "ruta": "psicoactivos/renacimiento-psicodelico"
+  },
+  {
+    "slug": "salud-espiritual",
+    "nombre": "Salud Espiritual",
+    "padre": "bienestar",
+    "ruta": "bienestar/salud-espiritual"
+  },
+  {
+    "slug": "salud-mental",
+    "nombre": "Salud Mental",
+    "padre": "bienestar",
+    "ruta": "bienestar/salud-mental"
+  },
+  {
+    "slug": "salud-y-nutricion",
+    "nombre": "Salud y Nutrición",
+    "padre": "bienestar",
+    "ruta": "bienestar/salud-y-nutricion"
+  },
+  {
+    "slug": "shitpost",
+    "nombre": "Shitpost",
+    "padre": "humor",
+    "ruta": "humor/shitpost"
+  },
+  {
+    "slug": "sin-filtro",
+    "nombre": "Sin filtro",
+    "padre": "identidad",
+    "ruta": "identidad/sin-filtro"
+  },
+  {
+    "slug": "soberania-de-la-consciencia",
+    "nombre": "Soberanía de la Consciencia",
+    "padre": "psicoactivos",
+    "ruta": "psicoactivos/soberania-de-la-consciencia"
+  },
+  {
+    "slug": "tecnicas",
+    "nombre": "Técnicas",
+    "padre": "mente-y-espiritu",
+    "ruta": "mente-y-espiritu/tecnicas"
+  },
+  {
+    "slug": "terapias",
+    "nombre": "Terapias",
+    "padre": "mente-y-espiritu",
+    "ruta": "mente-y-espiritu/terapias"
+  },
+  {
+    "slug": "testimonios",
+    "nombre": "Testimonios",
+    "padre": "experiencias",
+    "ruta": "experiencias/testimonios"
+  },
+  {
+    "slug": "videos",
+    "nombre": "Videos",
+    "padre": null,
+    "ruta": "videos"
+  }
+]
